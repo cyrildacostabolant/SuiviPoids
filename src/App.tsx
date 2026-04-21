@@ -9,7 +9,7 @@ import { anyApi } from 'convex/server';
 import { DatabaseTab } from './components/DatabaseTab';
 import { DailyLogTab } from './components/DailyLogTab';
 import { SummaryTab } from './components/SummaryTab';
-import { CalendarDays, AlertTriangle } from 'lucide-react';
+import { CalendarDays, AlertTriangle, ChartPie, DatabaseIcon, PlusSquare } from 'lucide-react';
 
 type TabType = 'daily' | 'database' | 'summary';
 
@@ -46,9 +46,9 @@ export default function App() {
   };
 
   const tabs = [
-    { id: 'database', label: 'Base de données' },
-    { id: 'daily', label: 'Saisie Journalière' },
-    { id: 'summary', label: 'Historique & Récap' },
+    { id: 'database', label: 'Aliments', icon: DatabaseIcon },
+    { id: 'daily', label: 'Journal', icon: PlusSquare },
+    { id: 'summary', label: 'Statistiques', icon: ChartPie },
   ];
 
   // Calculate today's total calories for the header widget
@@ -60,52 +60,66 @@ export default function App() {
   const isConvexMissing = !(import.meta as any).env.VITE_CONVEX_URL;
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900">
+      <div className="fixed inset-0 bg-[url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=3000&auto=format&fit=crop')] bg-cover bg-center bg-no-repeat opacity-[0.03] pointer-events-none" />
+      
       {isConvexMissing && (
-        <div className="bg-amber-100 text-amber-900 px-4 py-3 text-sm font-medium flex items-center justify-center gap-2 border-b border-amber-200">
-          <AlertTriangle className="w-4 h-4" />
+        <div className="bg-red-50 text-red-900 px-4 py-3 text-sm font-medium flex items-center justify-center gap-2 border-b border-red-100 relative z-10 shadow-sm">
+          <AlertTriangle className="w-4 h-4 text-red-500" />
           VITE_CONVEX_URL manquant. Exportez le projet et exécutez `npx convex dev` pour finaliser la configuration backend.
         </div>
       )}
 
-      <div className="p-4 sm:p-6 flex-1 flex flex-col max-w-6xl mx-auto w-full">
-        {/* Geometric Balance Header */}
-        <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-6">
+      <div className="p-4 sm:p-6 md:p-8 flex-1 flex flex-col max-w-[1000px] mx-auto w-full relative z-10">
+        {/* Modern Glass Header */}
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6 bg-white/70 backdrop-blur-xl p-6 rounded-[2rem] shadow-[0_4px_24px_-8px_rgba(0,0,0,0.05)] border border-white">
           <div className="flex flex-col">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Application</span>
-              <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                <CalendarDays className="w-5 h-5 text-indigo-500" />
-                Suivi Calories DCB
-              </h1>
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white">
+                <CalendarDays className="w-6 h-6 stroke-[1.5]" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 tracking-tight">
+                  Suivi Calories
+                </h1>
+                <p className="text-xs font-medium text-slate-400 mt-0.5">Application personnelle</p>
+              </div>
             </div>
-            <nav className="flex gap-4 sm:gap-8 mt-4 overflow-x-auto pb-1 w-full">
-              {tabs.map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as TabType)}
-                  className={`pb-2 text-sm whitespace-nowrap transition-colors focus:outline-none ${
-                    activeTab === tab.id
-                      ? 'border-b-[3px] border-indigo-500 text-indigo-600 font-semibold'
-                      : 'border-b-[3px] border-transparent text-slate-400 hover:text-slate-600'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
+            
+            {/* Pill Navigation */}
+            <nav className="flex gap-2 mt-6 overflow-x-auto pb-1 w-full hide-scrollbar">
+              {tabs.map(tab => {
+                const isActive = activeTab === tab.id;
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as TabType)}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${
+                      isActive
+                        ? 'bg-slate-900 text-white shadow-md'
+                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900'
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-indigo-400' : ''}`} />
+                    {tab.label}
+                  </button>
+                );
+              })}
             </nav>
           </div>
 
-          <div className="w-full md:w-auto text-right bg-indigo-600 text-white px-8 py-4 rounded-2xl shadow-lg shadow-indigo-600/20 flex flex-col items-center">
-            <span className="text-xs uppercase font-semibold opacity-80">Total Aujourd'hui</span>
-            <div className="flex items-baseline gap-1 mt-1">
-              <span className="text-4xl font-black">{totalCaloriesToday}</span>
-              <span className="text-lg opacity-90">kcal</span>
+          <div className="w-full md:w-auto relative group overflow-hidden bg-slate-900 text-white px-8 py-5 rounded-3xl shadow-xl shadow-slate-900/10 flex flex-col items-center min-w-[200px] transition-transform duration-500 hover:scale-[1.02]">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <span className="text-xs text-slate-400 font-medium mb-1 z-10 w-full text-center">Calories du jour</span>
+            <div className="flex items-baseline gap-1.5 z-10">
+              <span className="text-5xl font-black tracking-tight">{totalCaloriesToday}</span>
+              <span className="text-lg text-slate-500 font-medium">kcal</span>
             </div>
           </div>
         </header>
 
-        <main className="flex-1 mt-2">
+        <main className="flex-1 w-full relative">
           {activeTab === 'daily' && (
               <DailyLogTab
                 foods={foods}
