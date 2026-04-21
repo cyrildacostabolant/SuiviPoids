@@ -10,7 +10,10 @@ export const get = queryGeneric({
 
 export const saveAll = mutationGeneric({
   args: {
-    buttons: v.any() // Extreme fallback to ensure args parsing doesn't fail
+    buttons: v.array(v.object({
+      foodId: v.string(),
+      label: v.string(),
+    }))
   },
   handler: async (ctx, args) => {
     try {
@@ -20,22 +23,15 @@ export const saveAll = mutationGeneric({
         await ctx.db.delete(btn._id);
       }
       
-      // 2. Insert new ones, making sure they are clean
-      const buttonsList = Array.isArray(args.buttons) ? args.buttons : [];
-      for (const btn of buttonsList) {
-        // Ensure we have strings and no internal fields like _id
-        const foodId = btn?.foodId ? String(btn.foodId) : "";
-        const label = btn?.label ? String(btn.label) : "";
-
-        if (foodId && label) {
-          await ctx.db.insert("quickButtons", {
-            foodId,
-            label,
-          });
-        }
+      // 2. Insert new ones
+      for (const btn of args.buttons) {
+        await ctx.db.insert("quickButtons", {
+          foodId: btn.foodId,
+          label: btn.label,
+        });
       }
     } catch (error: any) {
-      throw new ConvexError(`Erreur serveur interne : ${error.message || error.toString()}`);
+      throw new ConvexError(error.message || error.toString());
     }
   },
 });

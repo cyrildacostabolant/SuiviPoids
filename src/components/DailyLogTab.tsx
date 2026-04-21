@@ -80,7 +80,11 @@ export function DailyLogTab({ foods, quickButtons, logs, onAddLog, onDeleteLog, 
 
     setIsSaving(true);
     try {
-      await onSaveQuickButtons(editingButtons);
+      const cleanButtons = editingButtons.map(b => ({
+        foodId: b.foodId || "",
+        label: b.label || ""
+      }));
+      await onSaveQuickButtons(cleanButtons as QuickButton[]);
       setIsSettingsOpen(false);
     } catch (error: any) {
       console.error(error);
