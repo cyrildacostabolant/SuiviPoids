@@ -42,12 +42,23 @@ export function DailyLogTab({ foods, quickButtons, logs, onAddLog, onDeleteLog, 
     setEditingButtons([...editingButtons, { foodId: foods[0]?._id || '', label: 'Nouveau bouton' }]);
   };
 
-  const updateEditingButton = (id: string, updates: Partial<QuickButton>) => {
-    setEditingButtons(editingButtons.map(b => (b._id || b.label) === id ? { ...b, ...updates } : b));
+  const updateEditingButton = (index: number, updates: Partial<QuickButton>) => {
+    setEditingButtons(editingButtons.map((b, i) => {
+      if (i !== index) return b;
+      const newBtn = { ...b, ...updates };
+      // If foodId changed, update label to food name automatically
+      if (updates.foodId) {
+        const selectedFood = foods.find(f => f._id === updates.foodId);
+        if (selectedFood) {
+          newBtn.label = selectedFood.name;
+        }
+      }
+      return newBtn;
+    }));
   };
 
-  const removeEditingButton = (id: string) => {
-    setEditingButtons(editingButtons.filter(b => (b._id || b.label) !== id));
+  const removeEditingButton = (index: number) => {
+    setEditingButtons(editingButtons.filter((_, i) => i !== index));
   };
 
   const saveSettings = () => {
@@ -178,23 +189,21 @@ export function DailyLogTab({ foods, quickButtons, logs, onAddLog, onDeleteLog, 
               </button>
             </div>
             <div className="p-6 overflow-y-auto flex-1 space-y-4">
-              {editingButtons.map((btn, idx) => {
-                const btnId = btn._id || btn.label;
-                return (
-                <div key={btnId} className="flex flex-col md:flex-row gap-3 items-start md:items-center bg-slate-50 p-4 rounded-xl border border-slate-200">
+              {editingButtons.map((btn, idx) => (
+                <div key={idx} className="flex flex-col md:flex-row gap-3 items-start md:items-center bg-slate-50 p-4 rounded-xl border border-slate-200">
                   <div className="w-6 h-6 flex items-center justify-center rounded-full bg-slate-200 text-xs font-bold text-slate-600 shrink-0">
                     {idx + 1}
                   </div>
                   <input
                     type="text"
                     value={btn.label}
-                    onChange={(e) => updateEditingButton(btnId, { label: e.target.value })}
+                    onChange={(e) => updateEditingButton(idx, { label: e.target.value })}
                     placeholder="Label (ex: Pomme)"
                     className="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full"
                   />
                   <select
                     value={btn.foodId}
-                    onChange={(e) => updateEditingButton(btnId, { foodId: e.target.value })}
+                    onChange={(e) => updateEditingButton(idx, { foodId: e.target.value })}
                     className="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white w-full"
                   >
                     <option value="" disabled>Sélectionner un aliment</option>
@@ -203,13 +212,13 @@ export function DailyLogTab({ foods, quickButtons, logs, onAddLog, onDeleteLog, 
                     ))}
                   </select>
                   <button
-                    onClick={() => removeEditingButton(btnId)}
+                    onClick={() => removeEditingButton(idx)}
                     className="p-2 text-slate-400 hover:text-red-500 rounded-lg shrink-0 self-end md:self-auto"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
-              )})}
+              ))}
               
               {editingButtons.length < 10 && (
                 <button
