@@ -1,0 +1,6 @@
+{
+  "name": "Suivi Calories",
+  "description": "Application de suivi de consommation quotidienne des calories pour contrôler le poids.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
