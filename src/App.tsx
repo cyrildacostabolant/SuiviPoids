@@ -107,14 +107,21 @@ export default function App() {
 
         <main className="flex-1 mt-2">
           {activeTab === 'daily' && (
-            <DailyLogTab
-              foods={foods}
-              quickButtons={quickButtons}
-              logs={logs}
-              onAddLog={addLog}
-              onDeleteLog={(id) => deleteLog({ id })}
-              onSaveQuickButtons={(buttons) => saveQuickButtons({ buttons })}
-            />
+              <DailyLogTab
+                foods={foods}
+                quickButtons={quickButtons}
+                logs={logs}
+                onAddLog={addLog}
+                onDeleteLog={(id) => deleteLog({ id })}
+                onSaveQuickButtons={async (buttons) => {
+                  try {
+                    await saveQuickButtons({ buttons });
+                  } catch (error) {
+                    console.error("Failed to save quick buttons:", error);
+                    throw error;
+                  }
+                }}
+              />
           )}
           {activeTab === 'database' && (
             <DatabaseTab

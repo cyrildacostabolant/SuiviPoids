@@ -15,6 +15,7 @@ export function DailyLogTab({ foods, quickButtons, logs, onAddLog, onDeleteLog, 
   const [selectedFoodId, setSelectedFoodId] = useState('');
   const [customWeight, setCustomWeight] = useState('');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Settings state
   const [editingButtons, setEditingButtons] = useState<QuickButton[]>(quickButtons);
@@ -39,7 +40,11 @@ export function DailyLogTab({ foods, quickButtons, logs, onAddLog, onDeleteLog, 
 
   const addEditingButton = () => {
     if (editingButtons.length >= 10) return;
-    setEditingButtons([...editingButtons, { foodId: foods[0]?._id || '', label: 'Nouveau bouton' }]);
+    const initialFood = foods[0];
+    setEditingButtons([...editingButtons, { 
+      foodId: initialFood?._id || '', 
+      label: initialFood?.name || 'Nouveau bouton' 
+    }]);
   };
 
   const updateEditingButton = (index: number, updates: Partial<QuickButton>) => {
@@ -61,9 +66,17 @@ export function DailyLogTab({ foods, quickButtons, logs, onAddLog, onDeleteLog, 
     setEditingButtons(editingButtons.filter((_, i) => i !== index));
   };
 
-  const saveSettings = () => {
-    onSaveQuickButtons(editingButtons);
-    setIsSettingsOpen(false);
+  const saveSettings = async () => {
+    setIsSaving(true);
+    try {
+      await onSaveQuickButtons(editingButtons);
+      setIsSettingsOpen(false);
+    } catch (error) {
+      console.error(error);
+      alert("Erreur lors de l'enregistrement. Vérifiez que tous les boutons ont un aliment sélectionné.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -239,9 +252,12 @@ export function DailyLogTab({ foods, quickButtons, logs, onAddLog, onDeleteLog, 
               </button>
               <button
                 onClick={saveSettings}
-                className="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-slate-800 hover:bg-slate-700 transition-colors"
+                disabled={isSaving}
+                className={`px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-colors ${
+                  isSaving ? 'bg-slate-400 cursor-not-allowed' : 'bg-slate-800 hover:bg-slate-700'
+                }`}
               >
-                Enregistrer
+                {isSaving ? 'Enregistrement...' : 'Enregistrer'}
               </button>
             </div>
           </div>
