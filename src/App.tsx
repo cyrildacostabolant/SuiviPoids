@@ -10,6 +10,7 @@ import { DatabaseTab } from './components/DatabaseTab';
 import { DailyLogTab } from './components/DailyLogTab';
 import { SummaryTab } from './components/SummaryTab';
 import { CalendarDays, AlertTriangle, ChartPie, DatabaseIcon, PlusSquare } from 'lucide-react';
+import { getLocalDateString, useLocalDateString } from './utils/dateUtils';
 
 type TabType = 'daily' | 'database' | 'summary';
 
@@ -33,7 +34,7 @@ export default function App() {
     if (!food) return;
 
     const calories = Math.round((food.caloriesPer100g * weight) / 100);
-    const date = customDate || new Date().toISOString().split('T')[0];
+    const date = customDate || getLocalDateString();
 
     await addLogBase({
       date,
@@ -52,7 +53,7 @@ export default function App() {
   ];
 
   // Calculate today's total calories for the header widget
-  const today = new Date().toISOString().split('T')[0];
+  const today = useLocalDateString();
   const totalCaloriesToday = logs
     .filter(l => l.date === today)
     .reduce((acc, l) => acc + l.calories, 0);

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Settings, X, Trash2, List } from 'lucide-react';
 import { Food, QuickButton, LogEntry } from '../store';
+import { useLocalDateString } from '../utils/dateUtils';
 
 interface Props {
   foods: Food[];
@@ -21,7 +22,7 @@ export function DailyLogTab({ foods, quickButtons, logs, onAddLog, onDeleteLog, 
   const [editingButtons, setEditingButtons] = useState<QuickButton[]>(quickButtons);
 
   // Filter logs for today
-  const today = new Date().toISOString().split('T')[0];
+  const today = useLocalDateString();
   const todayLogs = logs.filter(l => l.date === today);
 
   const handleCustomAdd = (e: React.FormEvent) => {

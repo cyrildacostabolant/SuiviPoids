@@ -1,12 +1,15 @@
 import React from 'react';
 import { LogEntry } from '../store';
 import { Activity } from 'lucide-react';
+import { useLocalDateString } from '../utils/dateUtils';
 
 interface Props {
   logs: LogEntry[];
 }
 
 export function SummaryTab({ logs }: Props) {
+  const today = useLocalDateString();
+
   // Group logs by date
   const logsByDate = logs.reduce((acc, log) => {
     if (!acc[log.date]) {
@@ -15,6 +18,11 @@ export function SummaryTab({ logs }: Props) {
     acc[log.date] += log.calories;
     return acc;
   }, {} as Record<string, number>);
+
+  // Ensure 'today' is always present in the summary so it rolls over automatically at midnight
+  if (logsByDate[today] === undefined) {
+    logsByDate[today] = 0;
+  }
 
   // Sort dates descending
   const sortedDates = Object.keys(logsByDate).sort((a, b) => {
