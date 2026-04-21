@@ -82,9 +82,9 @@ export function DailyLogTab({ foods, quickButtons, logs, onAddLog, onDeleteLog, 
     try {
       await onSaveQuickButtons(editingButtons);
       setIsSettingsOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      const errorMsg = error instanceof Error ? error.message : "Erreur inconnue";
+      const errorMsg = error.data || (error instanceof Error ? error.message : "Erreur inconnue");
       alert("Erreur lors de l'enregistrement : " + errorMsg);
     } finally {
       setIsSaving(false);
