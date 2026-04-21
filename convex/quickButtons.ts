@@ -10,10 +10,7 @@ export const get = queryGeneric({
 
 export const saveAll = mutationGeneric({
   args: {
-    buttons: v.array(v.object({
-      foodId: v.string(),
-      label: v.string(),
-    }))
+    buttons: v.array(v.any())
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db.query("quickButtons").collect();
@@ -21,7 +18,15 @@ export const saveAll = mutationGeneric({
       await ctx.db.delete(btn._id);
     }
     for (const btn of args.buttons) {
-      await ctx.db.insert("quickButtons", btn);
+      // Create a clean object for insertion (strip _id and other internal fields)
+      const cleanBtn = {
+        foodId: btn.foodId,
+        label: btn.label,
+      };
+      // Only insert if it has the required fields
+      if (cleanBtn.foodId && cleanBtn.label) {
+        await ctx.db.insert("quickButtons", cleanBtn);
+      }
     }
   },
 });
