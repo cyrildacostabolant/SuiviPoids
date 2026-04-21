@@ -13,19 +13,23 @@ export const saveAll = mutationGeneric({
     buttons: v.array(v.any())
   },
   handler: async (ctx, args) => {
+    // 1. Delete all existing buttons first
     const existing = await ctx.db.query("quickButtons").collect();
     for (const btn of existing) {
       await ctx.db.delete(btn._id);
     }
+    
+    // 2. Insert new ones, making sure they are clean
     for (const btn of args.buttons) {
-      // Create a clean object for insertion (strip _id and other internal fields)
-      const cleanBtn = {
-        foodId: btn.foodId,
-        label: btn.label,
-      };
-      // Only insert if it has the required fields
-      if (cleanBtn.foodId && cleanBtn.label) {
-        await ctx.db.insert("quickButtons", cleanBtn);
+      // Ensure we have strings and no internal fields like _id
+      const foodId = btn.foodId ? String(btn.foodId) : "";
+      const label = btn.label ? String(btn.label) : "";
+
+      if (foodId && label) {
+        await ctx.db.insert("quickButtons", {
+          foodId,
+          label,
+        });
       }
     }
   },

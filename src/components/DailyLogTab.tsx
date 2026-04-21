@@ -40,10 +40,16 @@ export function DailyLogTab({ foods, quickButtons, logs, onAddLog, onDeleteLog, 
 
   const addEditingButton = () => {
     if (editingButtons.length >= 10) return;
+    
+    if (foods.length === 0) {
+      alert("Veuillez d'abord ajouter des aliments dans l'onglet 'Base de données' avant de configurer des boutons.");
+      return;
+    }
+
     const initialFood = foods[0];
     setEditingButtons([...editingButtons, { 
-      foodId: initialFood?._id || '', 
-      label: initialFood?.name || 'Nouveau bouton' 
+      foodId: initialFood._id, 
+      label: initialFood.name 
     }]);
   };
 
@@ -67,13 +73,19 @@ export function DailyLogTab({ foods, quickButtons, logs, onAddLog, onDeleteLog, 
   };
 
   const saveSettings = async () => {
+    if (editingButtons.length > 0 && editingButtons.some(b => !b.foodId)) {
+      alert("Certains boutons n'ont pas d'aliment sélectionné.");
+      return;
+    }
+
     setIsSaving(true);
     try {
       await onSaveQuickButtons(editingButtons);
       setIsSettingsOpen(false);
     } catch (error) {
       console.error(error);
-      alert("Erreur lors de l'enregistrement. Vérifiez que tous les boutons ont un aliment sélectionné.");
+      const errorMsg = error instanceof Error ? error.message : "Erreur inconnue";
+      alert("Erreur lors de l'enregistrement : " + errorMsg);
     } finally {
       setIsSaving(false);
     }
