@@ -57,124 +57,117 @@ export function DailyLogTab({ foods, quickButtons, logs, onAddLog, onDeleteLog, 
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Top Section: Add tools */}
+      <section className="bg-white rounded-[1rem] shadow-[0_1px_3px_rgba(0,0,0,0.1)] border border-slate-200 p-6">
         
-        {/* Left Section: Today's Logs */}
-        <section className="bg-white rounded-[1rem] shadow-[0_1px_3px_rgba(0,0,0,0.1)] border border-slate-200 flex flex-col overflow-hidden h-fit">
-          <div className="p-4 bg-slate-50 border-b border-slate-100">
-            <h2 className="font-semibold text-sm flex items-center gap-2">
-              <List className="w-4 h-4" /> Journal du Jour
-            </h2>
-          </div>
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 max-h-[500px]">
-             {todayLogs.length === 0 ? (
-                <div className="text-center text-sm text-slate-400 py-4">Aucun aliment consommé aujourd'hui.</div>
-             ) : (
-                [...todayLogs].sort((a,b) => b.timestamp - a.timestamp).map(log => (
-                  <div key={log._id} className="flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-slate-100 transition-colors hover:border-slate-200 group">
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium">{log.foodName}</span>
-                      <span className="text-xs text-slate-400">{log.weight}g • {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="font-bold text-sm text-indigo-600">{log.calories} kcal</span>
-                      <button
-                        onClick={() => onDeleteLog(log._id)}
-                        className="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))
-             )}
-          </div>
-          <div className="p-4 bg-slate-50 border-t border-slate-100">
-            <p className="text-[10px] text-slate-400 italic uppercase text-center">Modifiable jusqu'à 23:59 ce soir</p>
-          </div>
-        </section>
-
-        {/* Right Section: Add tools (takes remaining width) */}
-        <section className="lg:col-span-2 flex flex-col gap-6">
-          <div className="bg-white rounded-[1rem] shadow-[0_1px_3px_rgba(0,0,0,0.1)] border border-slate-200 flex-1 p-6">
-            
-            {/* Quick Add */}
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xs font-bold uppercase text-slate-400 tracking-wider">Ajout Rapide (Portions Standard)</h3>
-              <button
-                onClick={() => { setEditingButtons(quickButtons); setIsSettingsOpen(true); }}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-indigo-600 transition-colors"
-              >
-                <Settings className="w-3.5 h-3.5" />
-                Paramétrer
-              </button>
+        {/* Quick Add */}
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xs font-bold uppercase text-slate-400 tracking-wider">Ajout Rapide (Portions Standard)</h3>
+          <button
+            onClick={() => { setEditingButtons(quickButtons); setIsSettingsOpen(true); }}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-indigo-600 transition-colors"
+          >
+            <Settings className="w-3.5 h-3.5" />
+            Paramétrer
+          </button>
+        </div>
+        
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-8">
+          {quickButtons.length === 0 ? (
+            <div className="col-span-full py-6 text-center text-sm text-slate-400 border border-dashed border-slate-200 rounded-xl">
+              Aucun bouton configuré. Cliquez sur Paramétrer.
             </div>
-            
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-8">
-              {quickButtons.length === 0 ? (
-                <div className="col-span-full py-6 text-center text-sm text-slate-400 border border-dashed border-slate-200 rounded-xl">
-                  Aucun bouton configuré. Cliquez sur Paramétrer.
-                </div>
-              ) : (
-                quickButtons.map((qb, i) => {
-                  const food = foods.find(f => f._id === qb.foodId);
-                  return (
-                    <button
-                      key={qb._id || i}
-                      onClick={() => handleQuickAdd(qb)}
-                      className="bg-[#F8FAFC] border border-slate-200 rounded-xl p-3 text-center transition-all hover:bg-[#EEF2FF] hover:border-indigo-500 active:scale-[0.98] cursor-pointer flex flex-col items-center justify-center min-h-[72px]"
-                    >
-                      <div className="font-semibold text-sm text-indigo-600 leading-tight">{qb.label}</div>
-                      <div className="text-[10px] font-normal text-slate-500 mt-1">
-                        {food ? `${food.portionWeight}g` : '?g'}
-                      </div>
-                    </button>
-                  );
-                })
-              )}
-            </div>
-
-            {/* Custom Add */}
-            <div className="space-y-4">
-              <h3 className="text-xs font-bold uppercase text-slate-400 tracking-wider">Saisie Personnalisée</h3>
-              <form onSubmit={handleCustomAdd} className="flex flex-col sm:flex-row gap-3">
-                <div className="flex-1 relative">
-                  <select
-                    required
-                    value={selectedFoodId}
-                    onChange={e => setSelectedFoodId(e.target.value)}
-                    className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 appearance-none"
-                  >
-                    <option value="" disabled>Rechercher un aliment...</option>
-                    {foods.map(food => (
-                      <option key={food._id} value={food._id}>{food.name} ({food.caloriesPer100g} kcal/100g)</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="w-full sm:w-32">
-                  <input
-                    type="number"
-                    required
-                    min="1"
-                    value={customWeight}
-                    onChange={e => setCustomWeight(e.target.value)}
-                    placeholder="Poids (g)"
-                    className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50"
-                  />
-                </div>
+          ) : (
+            quickButtons.map((qb, i) => {
+              const food = foods.find(f => f._id === qb.foodId);
+              return (
                 <button
-                  type="submit"
-                  className="bg-slate-800 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-slate-700 transition-colors w-full sm:w-auto"
+                  key={qb._id || i}
+                  onClick={() => handleQuickAdd(qb)}
+                  className="bg-[#F8FAFC] border border-slate-200 rounded-xl p-3 text-center transition-all hover:bg-[#EEF2FF] hover:border-indigo-500 active:scale-[0.98] cursor-pointer flex flex-col items-center justify-center min-h-[72px]"
                 >
-                  Ajouter
+                  <div className="font-semibold text-sm text-indigo-600 leading-tight">{qb.label}</div>
+                  <div className="text-[10px] font-normal text-slate-500 mt-1">
+                    {food ? `${food.portionWeight}g` : '?g'}
+                  </div>
                 </button>
-              </form>
-            </div>
-          </div>
-        </section>
-      </div>
+              );
+            })
+          )}
+        </div>
 
-      {/* Settings Modal - Kept essentially the same logic but updated aesthetics */}
+        {/* Custom Add */}
+        <div className="space-y-4">
+          <h3 className="text-xs font-bold uppercase text-slate-400 tracking-wider">Saisie Personnalisée</h3>
+          <form onSubmit={handleCustomAdd} className="flex flex-col sm:flex-row gap-3">
+            <div className="flex-1 relative">
+              <select
+                required
+                value={selectedFoodId}
+                onChange={e => setSelectedFoodId(e.target.value)}
+                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 appearance-none"
+              >
+                <option value="" disabled>Rechercher un aliment...</option>
+                {foods.map(food => (
+                  <option key={food._id} value={food._id}>{food.name} ({food.caloriesPer100g} kcal/100g)</option>
+                ))}
+              </select>
+            </div>
+            <div className="w-full sm:w-32">
+              <input
+                type="number"
+                required
+                min="1"
+                value={customWeight}
+                onChange={e => setCustomWeight(e.target.value)}
+                placeholder="Poids (g)"
+                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50"
+              />
+            </div>
+            <button
+              type="submit"
+              className="bg-slate-800 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-slate-700 transition-colors w-full sm:w-auto"
+            >
+              Ajouter
+            </button>
+          </form>
+        </div>
+      </section>
+
+      {/* Bottom Section: Today's Logs */}
+      <section className="bg-white rounded-[1rem] shadow-[0_1px_3px_rgba(0,0,0,0.1)] border border-slate-200 flex flex-col overflow-hidden max-h-[600px]">
+        <div className="p-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+          <h2 className="font-semibold text-sm flex items-center gap-2">
+            <List className="w-4 h-4" /> Journal du Jour
+          </h2>
+          <p className="text-[10px] text-slate-400 italic uppercase">Modifiable jusqu'à 23:59</p>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {todayLogs.length === 0 ? (
+              <div className="text-center text-sm text-slate-400 py-12">Aucun aliment consommé aujourd'hui.</div>
+            ) : (
+              [...todayLogs].sort((a,b) => b.timestamp - a.timestamp).map(log => (
+                <div key={log._id} className="flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-slate-100 transition-colors hover:border-slate-200 group">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">{log.foodName}</span>
+                    <span className="text-xs text-slate-400">{log.weight}g • {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-bold text-sm text-indigo-600">{log.calories} kcal</span>
+                    <button
+                      onClick={() => onDeleteLog(log._id)}
+                      className="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+        </div>
+      </section>
+
+      {/* Settings Modal */}
       {isSettingsOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">

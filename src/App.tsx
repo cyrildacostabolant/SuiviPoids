@@ -76,7 +76,7 @@ export default function App() {
               <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Application</span>
               <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
                 <CalendarDays className="w-5 h-5 text-indigo-500" />
-                CaliCheck Pro
+                Suivi Calories DCB
               </h1>
             </div>
             <nav className="flex gap-4 sm:gap-8 mt-4 overflow-x-auto pb-1 w-full">

@@ -1,0 +1,17 @@
+{
+  "name": "Suivi Calories DCB",
+  "short_name": "Calories DCB",
+  "description": "Suivi de consommation quotidienne des calories",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F1F5F9",
+  "theme_color": "#4F46E5",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
