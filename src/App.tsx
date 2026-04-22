@@ -61,8 +61,9 @@ export default function App() {
   const isConvexMissing = !(import.meta as any).env.VITE_CONVEX_URL;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900">
-      <div className="fixed inset-0 bg-[url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=3000&auto=format&fit=crop')] bg-cover bg-center bg-no-repeat opacity-[0.03] pointer-events-none" />
+    <div className="min-h-screen bg-blue-50 text-slate-800 flex flex-col font-sans selection:bg-blue-100 selection:text-blue-900">
+      <div className="fixed inset-0 bg-gradient-to-br from-blue-100/50 via-white/50 to-blue-50/50 pointer-events-none" />
+      <div className="fixed inset-0 bg-[url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=3000&auto=format&fit=crop')] bg-cover bg-center bg-no-repeat opacity-[0.02] pointer-events-none mix-blend-overlay" />
       
       {isConvexMissing && (
         <div className="bg-red-50 text-red-900 px-4 py-3 text-sm font-medium flex items-center justify-center gap-2 border-b border-red-100 relative z-10 shadow-sm">
@@ -76,8 +77,8 @@ export default function App() {
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6 bg-white/70 backdrop-blur-xl p-5 sm:p-6 rounded-[2rem] shadow-[0_4px_24px_-8px_rgba(0,0,0,0.05)] border border-white overflow-hidden">
           <div className="flex flex-col w-full md:w-auto min-w-0 flex-1">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white shrink-0">
-                <CalendarDays className="w-6 h-6 stroke-[1.5]" />
+              <div className="w-12 h-12 rounded-[1rem] bg-white flex items-center justify-center shadow-md shadow-slate-200/50 shrink-0 border border-slate-100 overflow-hidden">
+                <img src="/icon.svg" alt="Logo" className="w-8 h-8 object-contain" />
               </div>
               <div className="min-w-0">
                 <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 tracking-tight truncate">
