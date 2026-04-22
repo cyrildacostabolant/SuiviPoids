@@ -73,22 +73,22 @@ export default function App() {
 
       <div className="p-4 sm:p-6 md:p-8 flex-1 flex flex-col max-w-[1000px] mx-auto w-full relative z-10">
         {/* Modern Glass Header */}
-        <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6 bg-white/70 backdrop-blur-xl p-6 rounded-[2rem] shadow-[0_4px_24px_-8px_rgba(0,0,0,0.05)] border border-white">
-          <div className="flex flex-col">
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6 bg-white/70 backdrop-blur-xl p-5 sm:p-6 rounded-[2rem] shadow-[0_4px_24px_-8px_rgba(0,0,0,0.05)] border border-white overflow-hidden">
+          <div className="flex flex-col w-full md:w-auto min-w-0 flex-1">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white shrink-0">
                 <CalendarDays className="w-6 h-6 stroke-[1.5]" />
               </div>
-              <div>
-                <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 tracking-tight">
+              <div className="min-w-0">
+                <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 tracking-tight truncate">
                   Suivi Calories
                 </h1>
-                <p className="text-xs font-medium text-slate-400 mt-0.5">Application personnelle</p>
+                <p className="text-xs font-medium text-slate-400 mt-0.5 truncate">Application personnelle</p>
               </div>
             </div>
             
             {/* Pill Navigation */}
-            <nav className="flex gap-2 mt-6 overflow-x-auto pb-1 w-full hide-scrollbar">
+            <nav className="flex gap-2 mt-6 overflow-x-auto pb-2 w-full hide-scrollbar sm:pb-1">
               {tabs.map(tab => {
                 const isActive = activeTab === tab.id;
                 const Icon = tab.icon;
@@ -96,13 +96,13 @@ export default function App() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as TabType)}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${
+                    className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 whitespace-nowrap shrink-0 ${
                       isActive
                         ? 'bg-slate-900 text-white shadow-md'
                         : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900'
                     }`}
                   >
-                    <Icon className={`w-4 h-4 ${isActive ? 'text-indigo-400' : ''}`} />
+                    <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-indigo-400' : ''}`} />
                     {tab.label}
                   </button>
                 );
@@ -110,7 +110,7 @@ export default function App() {
             </nav>
           </div>
 
-          <div className="w-full md:w-auto relative group overflow-hidden bg-slate-900 text-white px-8 py-5 rounded-3xl shadow-xl shadow-slate-900/10 flex flex-col items-center min-w-[200px] transition-transform duration-500 hover:scale-[1.02]">
+          <div className="w-full md:w-auto relative group overflow-hidden bg-slate-900 text-white px-8 py-5 rounded-3xl shadow-xl shadow-slate-900/10 flex flex-col items-center shrink-0 transition-transform duration-500 hover:scale-[1.02]">
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <span className="text-xs text-slate-400 font-medium mb-1 z-10 w-full text-center">Calories du jour</span>
             <div className="flex items-baseline gap-1.5 z-10">
