@@ -1,13 +1,14 @@
 import React from 'react';
 import { LogEntry } from '../store';
-import { Activity } from 'lucide-react';
+import { Activity, Edit3 } from 'lucide-react';
 import { useLocalDateString } from '../utils/dateUtils';
 
 interface Props {
   logs: LogEntry[];
+  onEditDate: (date: string) => void;
 }
 
-export function SummaryTab({ logs }: Props) {
+export function SummaryTab({ logs, onEditDate }: Props) {
   const today = useLocalDateString();
 
   // Group logs by date
@@ -100,13 +101,23 @@ export function SummaryTab({ logs }: Props) {
                   return (
                     <tr 
                       key={date} 
-                      className={`group transition-colors ${
+                      className={`group transition-colors relative ${
                         isOverOrEqual1000 ? 'hover:bg-red-50/50' : 'hover:bg-green-50/50'
                       }`}
                     >
                       <td className="py-4 font-semibold px-2 capitalize text-slate-700 flex items-center gap-3">
                         <div className={`w-2 h-2 rounded-full ${isOverOrEqual1000 ? 'bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.5)]' : 'bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.5)]'}`} />
                         {formattedDate}
+                        {date !== today && (
+                            <button
+                               onClick={() => onEditDate(date)}
+                               className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 ml-2 bg-white border border-slate-200 text-indigo-500 rounded-lg hover:bg-indigo-50 hover:border-indigo-200 flex items-center gap-1.5 shadow-sm active:scale-95"
+                               title="Modifier cette journée"
+                            >
+                                <Edit3 className="w-3.5 h-3.5" />
+                                <span className="text-[10px] font-bold">Modifier</span>
+                            </button>
+                        )}
                       </td>
                       <td className="py-4 text-right pr-2">
                         <span className={`inline-flex items-center gap-1 font-bold px-3 py-1.5 rounded-xl ${

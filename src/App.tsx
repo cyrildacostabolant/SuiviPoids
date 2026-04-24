@@ -17,6 +17,10 @@ type TabType = 'daily' | 'database' | 'summary';
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabType>('daily');
   
+  const liveToday = useLocalDateString();
+  const [customDate, setCustomDate] = useState<string | null>(null);
+  const activeDate = customDate || liveToday;
+
   // Queries
   const foods = useQuery(anyApi.foods.get) || [];
   const quickButtons = useQuery(anyApi.quickButtons.get) || [];
@@ -29,12 +33,12 @@ export default function App() {
   const deleteLog = useMutation(anyApi.logs.remove);
   const addLogBase = useMutation(anyApi.logs.add);
 
-  const addLog = async (foodId: string, weight: number, customDate?: string) => {
+  const addLog = async (foodId: string, weight: number, optionalDate?: string) => {
     const food = foods.find(f => f._id === foodId); // Convex uses _id
     if (!food) return;
 
     const calories = Math.round((food.caloriesPer100g * weight) / 100);
-    const date = customDate || getLocalDateString();
+    const date = optionalDate || activeDate;
 
     await addLogBase({
       date,
@@ -52,10 +56,9 @@ export default function App() {
     { id: 'summary', label: 'Statistiques', icon: ChartPie },
   ];
 
-  // Calculate today's total calories for the header widget
-  const today = useLocalDateString();
+  // Calculate active day total calories for the header widget
   const totalCaloriesToday = logs
-    .filter(l => l.date === today)
+    .filter(l => l.date === activeDate)
     .reduce((acc, l) => acc + l.calories, 0);
 
   const isConvexMissing = !(import.meta as any).env.VITE_CONVEX_URL;
@@ -113,7 +116,7 @@ export default function App() {
 
           <div className="w-full md:w-auto relative group overflow-hidden bg-slate-900 text-white px-8 py-5 rounded-3xl shadow-xl shadow-slate-900/10 flex flex-col items-center shrink-0 transition-transform duration-500 hover:scale-[1.02]">
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <span className="text-xs text-slate-400 font-medium mb-1 z-10 w-full text-center">Calories du jour</span>
+            <span className="text-xs text-slate-400 font-medium mb-1 z-10 w-full text-center">Calories du {activeDate === liveToday ? "jour" : new Date(activeDate).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}</span>
             <div className="flex items-baseline gap-1.5 z-10">
               <span className="text-5xl font-black tracking-tight">{totalCaloriesToday}</span>
               <span className="text-lg text-slate-500 font-medium">kcal</span>
@@ -127,6 +130,9 @@ export default function App() {
                 foods={foods}
                 quickButtons={quickButtons}
                 logs={logs}
+                activeDate={activeDate}
+                liveToday={liveToday}
+                setCustomDate={setCustomDate}
                 onAddLog={addLog}
                 onDeleteLog={(id) => deleteLog({ id })}
                 onSaveQuickButtons={async (buttons) => {
@@ -147,7 +153,13 @@ export default function App() {
             />
           )}
           {activeTab === 'summary' && (
-            <SummaryTab logs={logs} />
+            <SummaryTab 
+              logs={logs} 
+              onEditDate={(date) => {
+                setCustomDate(date);
+                setActiveTab('daily');
+              }} 
+            />
           )}
         </main>
       </div>

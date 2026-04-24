@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
-import { Plus, Settings, X, Trash2, List } from 'lucide-react';
+import { Plus, Settings, X, Trash2, List, ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import { Food, QuickButton, LogEntry } from '../store';
-import { useLocalDateString } from '../utils/dateUtils';
 
 interface Props {
   foods: Food[];
   quickButtons: QuickButton[];
   logs: LogEntry[];
+  activeDate: string;
+  liveToday: string;
+  setCustomDate: (date: string | null) => void;
   onAddLog: (foodId: string, weight: number) => void;
   onDeleteLog: (id: string) => void;
   onSaveQuickButtons: (buttons: QuickButton[]) => void;
 }
 
-export function DailyLogTab({ foods, quickButtons, logs, onAddLog, onDeleteLog, onSaveQuickButtons }: Props) {
+export function DailyLogTab({ foods, quickButtons, logs, activeDate, liveToday, setCustomDate, onAddLog, onDeleteLog, onSaveQuickButtons }: Props) {
   const [selectedFoodId, setSelectedFoodId] = useState('');
   const [customWeight, setCustomWeight] = useState('');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -21,9 +23,8 @@ export function DailyLogTab({ foods, quickButtons, logs, onAddLog, onDeleteLog, 
   // Settings state
   const [editingButtons, setEditingButtons] = useState<QuickButton[]>(quickButtons);
 
-  // Filter logs for today
-  const today = useLocalDateString();
-  const todayLogs = logs.filter(l => l.date === today);
+  // Filter logs for active Date
+  const currentLogs = logs.filter(l => l.date === activeDate);
 
   const handleCustomAdd = (e: React.FormEvent) => {
     e.preventDefault();
@@ -191,22 +192,64 @@ export function DailyLogTab({ foods, quickButtons, logs, onAddLog, onDeleteLog, 
 
       {/* Bottom Section: Today's Logs */}
       <section className="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-sm border border-slate-200/60 flex flex-col overflow-hidden max-h-[600px]">
-        <div className="px-6 py-5 bg-white/50 border-b border-slate-100 flex justify-between items-center sticky top-0 z-10">
+        <div className="px-6 py-5 bg-white/50 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sticky top-0 z-10">
           <h2 className="font-bold text-sm flex items-center gap-2 text-slate-800">
-            <List className="w-4 h-4 text-indigo-500" /> Journal du Jour
+            <List className="w-4 h-4 text-indigo-500" /> Journal
           </h2>
-          <p className="text-[10px] text-slate-400 font-medium bg-slate-100 px-2.5 py-1 rounded-full">Jusqu'à 23:59</p>
+          
+          <div className="flex items-center gap-2 bg-white rounded-xl shadow-sm border border-slate-200/60 p-1">
+            <button 
+              onClick={() => {
+                const d = new Date(activeDate);
+                d.setDate(d.getDate() - 1);
+                setCustomDate(d.toISOString().split('T')[0]);
+              }}
+              className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <div className="flex items-center gap-1.5 px-2">
+              <CalendarIcon className="w-3.5 h-3.5 text-indigo-500" />
+              <input 
+                type="date" 
+                value={activeDate}
+                max={liveToday}
+                onChange={(e) => setCustomDate(e.target.value)}
+                className="text-xs font-bold text-slate-700 bg-transparent border-none appearance-none focus:outline-none cursor-pointer" 
+              />
+            </div>
+            <button 
+              onClick={() => {
+                const d = new Date(activeDate);
+                d.setDate(d.getDate() + 1);
+                const newStr = d.toISOString().split('T')[0];
+                if (newStr <= liveToday) setCustomDate(newStr);
+              }}
+              disabled={activeDate >= liveToday}
+              className={`p-1.5 rounded-lg transition-colors ${activeDate >= liveToday ? 'text-slate-300 cursor-not-allowed' : 'text-slate-500 hover:bg-slate-100'}`}
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+            {activeDate !== liveToday && (
+              <button 
+                onClick={() => setCustomDate(null)}
+                className="ml-2 text-[10px] font-bold bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-md hover:bg-indigo-100 transition-colors"
+              >
+                Auj.
+              </button>
+            )}
+          </div>
         </div>
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-2">
-            {todayLogs.length === 0 ? (
+            {currentLogs.length === 0 ? (
               <div className="text-center text-sm font-medium text-slate-400 py-16 flex flex-col items-center justify-center">
                  <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mb-4 text-slate-300">
                     <List className="w-6 h-6" />
                  </div>
-                 Aucun aliment consommé aujourd'hui.
+                 Aucun aliment consommé ce jour.
               </div>
             ) : (
-              [...todayLogs].sort((a,b) => b.timestamp - a.timestamp).map(log => (
+              [...currentLogs].sort((a,b) => b.timestamp - a.timestamp).map(log => (
                 <div key={log._id} className="flex justify-between items-center p-4 bg-white rounded-2xl border border-slate-100 transition-all hover:border-slate-200 group hover:shadow-sm">
                   <div className="flex flex-col gap-1">
                     <span className="text-sm font-semibold text-slate-800">{log.foodName}</span>
