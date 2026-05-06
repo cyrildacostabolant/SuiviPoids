@@ -3,6 +3,7 @@ export interface Food {
   name: string;
   caloriesPer100g: number;
   portionWeight: number; // in grams
+  color?: string; // e.g. "gray", "white", "blue", "yellow", "green", "red", "orange", "purple"
 }
 
 export interface QuickButton {

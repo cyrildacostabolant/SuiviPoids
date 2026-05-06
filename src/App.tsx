@@ -29,6 +29,7 @@ export default function App() {
   // Mutations
   const addFood = useMutation(anyApi.foods.add);
   const deleteFood = useMutation(anyApi.foods.remove);
+  const editFood = useMutation(anyApi.foods.update);
   const saveQuickButtons = useMutation(anyApi.quickButtons.saveAll);
   const deleteLog = useMutation(anyApi.logs.remove);
   const addLogBase = useMutation(anyApi.logs.add);
@@ -149,6 +150,7 @@ export default function App() {
             <DatabaseTab
               foods={foods}
               onAdd={addFood}
+              onEdit={(id, data) => editFood({ id, ...data })}
               onDelete={(id) => deleteFood({ id })}
             />
           )}

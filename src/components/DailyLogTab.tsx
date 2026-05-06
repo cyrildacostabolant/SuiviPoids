@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Settings, X, Trash2, List, ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import { Food, QuickButton, LogEntry } from '../store';
+import { getFoodColorStyles } from '../utils/colorUtils';
 
 interface Props {
   foods: Food[];
@@ -41,8 +42,6 @@ export function DailyLogTab({ foods, quickButtons, logs, activeDate, liveToday, 
   };
 
   const addEditingButton = () => {
-    if (editingButtons.length >= 10) return;
-    
     if (foods.length === 0) {
       alert("Veuillez d'abord ajouter des aliments dans l'onglet 'Base de données' avant de configurer des boutons.");
       return;
@@ -129,17 +128,19 @@ export function DailyLogTab({ foods, quickButtons, logs, activeDate, liveToday, 
           ) : (
             quickButtons.map((qb, i) => {
               const food = foods.find(f => f._id === qb.foodId);
+              const colorStyles = getFoodColorStyles(food?.color);
+              
               return (
                 <button
                   key={qb._id || i}
                   onClick={() => handleQuickAdd(qb)}
-                  className="group relative bg-white border border-slate-200/60 rounded-2xl p-4 text-center transition-all hover:bg-gradient-to-br hover:from-indigo-50 hover:to-white hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-500/10 active:scale-95 cursor-pointer flex flex-col items-center justify-center min-h-[88px] overflow-hidden"
+                  className={`group relative border rounded-2xl p-4 text-center transition-all hover:shadow-lg active:scale-95 cursor-pointer flex flex-col items-center justify-center min-h-[88px] overflow-hidden ${colorStyles.bg} ${colorStyles.border} ${colorStyles.hover}`}
                 >
-                  <div className="absolute inset-0 bg-indigo-600/0 group-hover:bg-indigo-600/5 transition-colors duration-300" />
-                  <div className="font-bold text-sm text-slate-700 group-hover:text-indigo-600 transition-colors leading-tight relative mt-1">
+                  <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300" />
+                  <div className={`font-bold text-sm leading-tight relative mt-1 ${colorStyles.text}`}>
                     {qb.label}
                   </div>
-                  <div className="text-[11px] font-medium text-slate-400 mt-1.5 bg-slate-100 group-hover:bg-indigo-100/50 group-hover:text-indigo-500 px-2 py-0.5 rounded-md transition-colors relative">
+                  <div className={`text-[11px] font-medium mt-1.5 px-2 py-0.5 rounded-md transition-colors relative bg-white/50 ${colorStyles.text}`}>
                     {food ? `${food.portionWeight}g` : '?g'}
                   </div>
                 </button>
@@ -282,7 +283,7 @@ export function DailyLogTab({ foods, quickButtons, logs, activeDate, liveToday, 
                 <Settings className="w-5 h-5 text-indigo-500" />
                 Paramétrage des boutons 
                 <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full ml-1">
-                  {editingButtons.length}/10
+                  {editingButtons.length} bouton{editingButtons.length > 1 ? 's' : ''}
                 </span>
               </h2>
               <button 
@@ -325,15 +326,13 @@ export function DailyLogTab({ foods, quickButtons, logs, activeDate, liveToday, 
                 </div>
               ))}
               
-              {editingButtons.length < 10 && (
-                <button
-                  onClick={addEditingButton}
-                  className="w-full py-5 border-2 border-dashed border-slate-200 hover:border-indigo-400 rounded-2xl text-slate-500 text-sm font-semibold hover:text-indigo-600 transition-all inline-flex justify-center items-center gap-2 bg-transparent hover:bg-indigo-50/50"
-                >
-                  <Plus className="w-5 h-5" />
-                  Ajouter un bouton
-                </button>
-              )}
+              <button
+                onClick={addEditingButton}
+                className="w-full py-5 border-2 border-dashed border-slate-200 hover:border-indigo-400 rounded-2xl text-slate-500 text-sm font-semibold hover:text-indigo-600 transition-all inline-flex justify-center items-center gap-2 bg-transparent hover:bg-indigo-50/50"
+              >
+                <Plus className="w-5 h-5" />
+                Ajouter un bouton
+              </button>
             </div>
             
             <div className="p-6 border-t border-slate-100/50 bg-white flex justify-end gap-3 rounded-b-[2rem]">

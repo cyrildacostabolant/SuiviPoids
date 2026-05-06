@@ -6,6 +6,7 @@ export default defineSchema({
     name: v.string(),
     caloriesPer100g: v.number(),
     portionWeight: v.number(),
+    color: v.optional(v.string()),
   }),
   quickButtons: defineTable({
     foodId: v.string(),
