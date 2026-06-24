@@ -88,7 +88,7 @@ export function SummaryTab({ logs, onEditDate }: Props) {
                 </tr>
               ) : (
                 sortedDates.map(date => {
-                  const calories = logsByDate[date];
+                  const calories = Math.round(logsByDate[date]);
                   const isOverOrEqual1000 = calories >= 1000;
                   
                   // Date Formatting

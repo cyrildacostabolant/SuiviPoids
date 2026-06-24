@@ -260,7 +260,7 @@ export function DailyLogTab({ foods, quickButtons, logs, activeDate, liveToday, 
                     </span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="font-black text-[15px] text-indigo-600 tracking-tight">{log.calories} <span className="text-xs text-indigo-400 font-medium">kcal</span></span>
+                    <span className="font-black text-[15px] text-indigo-600 tracking-tight">{Math.round(log.calories)} <span className="text-xs text-indigo-400 font-medium">kcal</span></span>
                     <button
                       onClick={() => onDeleteLog(log._id)}
                       className="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:text-red-500 hover:bg-red-50 opacity-100 md:opacity-0 group-hover:opacity-100 transition-all active:scale-95"

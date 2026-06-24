@@ -58,9 +58,9 @@ export default function App() {
   ];
 
   // Calculate active day total calories for the header widget
-  const totalCaloriesToday = logs
+  const totalCaloriesToday = Math.round(logs
     .filter(l => l.date === activeDate)
-    .reduce((acc, l) => acc + l.calories, 0);
+    .reduce((acc, l) => acc + l.calories, 0));
 
   const isConvexMissing = !(import.meta as any).env.VITE_CONVEX_URL;
 
